@@ -1,0 +1,8 @@
+{
+  "name": "fight-club",
+  "version": "0.0.0",
+  "main": "index.js",
+  "devDependencies": {
+      "csv-streamer": "0.1.x"
+  }
+}
