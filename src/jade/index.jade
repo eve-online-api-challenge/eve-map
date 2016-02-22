@@ -1,7 +1,7 @@
 include res.mixin.jade
 
 doctype html
-html(ng-app="FightClub" ng-strict-di="")
+html(ng-app="fight.club" ng-strict-di="")
   head
     meta(charset="utf-8")
     meta(http-equiv="X-UA-Compatible" content="IE=edge")
@@ -13,6 +13,5 @@ html(ng-app="FightClub" ng-strict-di="")
     link(href=css rel="stylesheet")
   body
     div(ui-view="")
-        h1 こんにちは
-        p hmmm
+    +templateHelper
     +jsHelper

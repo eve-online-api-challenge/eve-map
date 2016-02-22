@@ -1,3 +1,7 @@
 mixin jsHelper
     each scriptSrc in scripts
         script(src=scriptSrc.relative)
+
+mixin templateHelper
+    script(type="text/ng-template" id='/templates/landing.html')
+        include templates/landing.jade

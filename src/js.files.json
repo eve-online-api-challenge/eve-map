@@ -1,5 +1,6 @@
 [
     "lib/angular.js",
+    "lib/ui-router.js",
     "lib/three.js",
     "app.js"
 ]
