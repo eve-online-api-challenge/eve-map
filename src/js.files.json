@@ -1,0 +1,5 @@
+[
+    "lib/angular.js",
+    "lib/three.js",
+    "app.js"
+]

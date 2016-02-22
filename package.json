@@ -1,8 +1,20 @@
 {
-  "name": "fight-club",
-  "version": "0.0.0",
-  "main": "index.js",
-  "devDependencies": {
-      "csv-streamer": "0.1.x"
-  }
+    "name": "fight-club",
+    "version": "0.0.0",
+    "main": "server.js",
+    "devDependencies": {
+        "csv-streamer": "0.1.x",
+        "xml2js": "0.4.x"
+    },
+    "dependencies": {
+        "express": "4.13.x",
+        "connect-gzip-static": "1.0.x",
+        "less": "2.6.x",
+        "mongodb": "2.1.x",
+        "jade": "1.11.x",
+        "uglify-js": "2.6.x"
+    },
+    "scripts": {
+        "test": "supervisor --debug -n error -i src,public server.js"
+    }
 }
