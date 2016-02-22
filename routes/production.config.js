@@ -17,14 +17,14 @@ function ProductionConfig() {
     }
 
     self.sslRedirect = function sslRedirect(app) {
-        // app.enable('trust proxy');
-        // app.use(function redirectHttp(req, res, next) {
-        //     //require ssl
-        //     if (!req.secure)
-        //         res.redirect(['https://', req.get('Host'), req.url].join(''));
-        //     else
-        //         next();
-        // });
+        app.enable('trust proxy');
+        app.use(function redirectHttp(req, res, next) {
+            //require ssl
+            if (!req.secure)
+                res.redirect(['https://', req.get('Host'), req.url].join(''));
+            else
+                next();
+        });
     };
 
     self.registerMiddleware = function registerMiddleware(app) {
