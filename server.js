@@ -11,7 +11,10 @@ var Server = function () {
     self.setupVariables = function () {
         self.ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
         self.port = process.env.OPENSHIFT_NODEJS_PORT || 8082;
-        if (self.ipaddress !== "127.0.0.1") self.productionMode = true;
+        if (self.ipaddress !== "127.0.0.1")
+            self.productionMode = true;
+        else
+            console.log('Developer mode enabled');
     };
 
     self.terminator = function (sig) {
@@ -36,7 +39,7 @@ var Server = function () {
     self.initialize = function () {
         self.setupVariables();
         self.setupTerminationHandlers();
-        
+
     };
 
     self.start = function () {
@@ -44,7 +47,7 @@ var Server = function () {
         app.set('port', self.port);
 
         routes(app, self.productionMode);
-
+        http.createServer(app).listen()
         http.createServer(app).listen(self.port, self.ipaddress, function () {
             console.log('%s: Node server started on %s:%d ...', Date(Date.now()), self.ipaddress, self.port);
         });
