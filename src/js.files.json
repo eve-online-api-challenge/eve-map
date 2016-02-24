@@ -2,5 +2,9 @@
     "lib/angular.js",
     "lib/ui-router.js",
     "lib/three.js",
-    "app.js"
+    "app.js",
+    "universe.module.js",
+    "universe/universe.factory.js",
+    "universe/universe.map.ctrl.js",
+    "system.js"
 ]

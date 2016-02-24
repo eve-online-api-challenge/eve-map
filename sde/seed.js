@@ -60,16 +60,9 @@ function writeFiles() {
     var stringy = JSON.stringify(kspace);
     content.save(file, stringy);
     content.gzipSaveString(file, stringy);
-    
+
     file = path.join(__dirname, '..', 'public', 'sde', 'wspace.json');
     stringy = JSON.stringify(wspace);
     content.save(file, stringy);
     content.gzipSaveString(file, stringy);
-    // fs.
-    // var ws = fs.createWriteStream('../public/sde/kspace.json');
-    // ws.write(JSON.stringify(kspace));
-    // ws.end();
-    // ws = fs.createWriteStream('../public/sde/wspace.json');
-    // ws.write(JSON.stringify(wspace));
-    // ws.end();
 }

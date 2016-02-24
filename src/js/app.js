@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('fight.club', ['ui.router'])
+        .module('fight.club', ['ui.router', 'universe'])
         .config(['$stateProvider', '$urlRouterProvider', configureApp]);
 
     function configureApp($stateProvider, $urlRouterProvider) {
@@ -11,8 +11,8 @@
         $stateProvider
             .state('index', {
                 url: '/',
-                noAuth: true,
                 templateUrl: '/templates/landing.html'
             });
     }
+
 })();
