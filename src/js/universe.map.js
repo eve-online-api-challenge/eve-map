@@ -5,6 +5,7 @@ function UniverseMap(universe) {
     var radialCamera, scene;
     var container = document.getElementById('systemView');
     var renderer = new THREE.WebGLRenderer();
+    var controls;
     renderer.setSize(screenWidth, screenHeight);
     container.appendChild(renderer.domElement);
 
@@ -19,6 +20,7 @@ function UniverseMap(universe) {
 
     this.render = function render() {
         requestAnimationFrame(render);
+        controls.update();
         renderer.render(scene, radialCamera.camera);
     }
 
@@ -50,7 +52,12 @@ function UniverseMap(universe) {
             z = (universe.limits.zMin + universe.limits.zMax) / 2;
             radius = universe.limits.zMax * 3;
             self.camera.position.y = radius;
-            self.camera.lookAt(new THREE.Vector3(x, y, z));
+            controls = new THREE.TrackballControls(self.camera, renderer.domElement);
+            controls.minDistance = radius / 10;
+            controls.maxDistance = radius * 2;
+            controls.target = new THREE.Vector3(x, y, z);
+            controls.rotateSpeed = 8;
+            controls.zoomSpeed = 5;
         }
     }
 }
