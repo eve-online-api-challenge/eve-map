@@ -7,7 +7,7 @@ var jumpCsv = new CSVStream({ headers: true });
 var ssCsv = new CSVStream({ headers: true });
 var kspace = {};
 var wspace = {};
-var jove = {}
+var jove = {};
 
 fs.createReadStream('./mapSolarSystems.csv').pipe(ssCsv);
 
