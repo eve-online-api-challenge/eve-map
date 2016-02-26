@@ -7,7 +7,7 @@
     function universeFactory($http) {
         var kspace = {};
         var subspace = {};
-        var xMin, xMax, yMin, yMax, zMin, zMax;
+        var limits = { xMin: 0, xMax: 0, yMin: 0, yMax: 0, zMin: 0, zMax: 0 }
         function getKspace() {
             // var promise = $http.jsonp('/sde/kspace.json');
             var promise = $http.get('/sde/kspace.json');
@@ -21,15 +21,15 @@
         function filter(filters) {
             //TODO think of filter schema
             //Apply filters to get subspace
-            if(!filters);
+            if (!filters)
                 angular.copy(kspace, subspace);
             //Adjust map limits
             setMapLimits();
         }
         function setMapLimits() {
-            xMin = 0, xMax = 0;
-            yMin = 0, yMax = 0;
-            zMin = 0, zMax = 0;
+            limits.xMin = 0, limits.xMax = 0;
+            limits.yMin = 0, limits.yMax = 0;
+            limits.zMin = 0, limits.zMax = 0;
             var keys = Object.keys(kspace);
             var i, l = keys.length;
             for (i = 0; i < l; i++) {
@@ -38,27 +38,23 @@
             }
         }
         function updateLimits(x, y, z) {
-            if (x > xMax)
-                xMax = x;
-            else if (x < xMin)
-                xMin = x;
-            if (y > yMax)
-                yMax = y;
-            else if (y < yMin)
-                yMin = y;
-            if (z > zMax)
-                zMax = z;
-            else if (z < zMin)
-                zMin = z;
+            if (x > limits.xMax)
+                limits.xMax = x;
+            else if (x < limits.xMin)
+                limits.xMin = x;
+            if (y > limits.yMax)
+                limits.yMax = y;
+            else if (y < limits.yMin)
+                limits.yMin = y;
+            if (z > limits.zMax)
+                limits.zMax = z;
+            else if (z < limits.zMin)
+                limits.zMin = z;
         }
         return {
             "get": getKspace,
             "systems": subspace,
-            "limits": {
-                xMin: xMin, xMax: xMax,
-                yMin: yMin, yMax: yMax,
-                zMin: zMin, zMax: zMax
-            },
+            "limits": limits,
             "filter": filter
         };
     }
