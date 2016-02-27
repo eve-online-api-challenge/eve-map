@@ -49,43 +49,14 @@
             bySecurityLessThan: filterSecurityLessThan
         }
 
-        //         function filterByJumpsFromSystem(startId, n) {
-        //             //want to be able to chain filters, because that would be cool...
-        //             var subset = {};
-        //             recurse(startId, undefined, 0);
-        // 
-        //             //Need to recurse a tree to depth n and
-        //             //return all systems in the tree
-        //             function recurse(systemId, previousSystemId, depth) {
-        //                 var system = systems[systemId];
-        //                 if (depth < n) {
-        //                     system.connections.forEach(function (connectionId) {
-        //                         subset[connectionId] = systems[connectionId];
-        //                         
-        //                         if (previousSystemId !== connectionId)
-        //                             recurse(connectionId, systemId, depth + 1);
-        //                     });
-        //                 }
-        //             }
-        //             angular.copy(subset, systems);
-        //         }
-
         function filterByJumpsFromSystem(startId, n) {
             //Experiment to optimize tree depth testing
             var layers = [[startId]];
             goDeeper();
-            
-            var tot = 0;
-            layers.forEach(function(layer) {
-                layer.forEach(function() {
-                   tot++; 
-                });
-            });
-            console.log('total systems in unvirse: ', tot);
-            var keys = Object.keys(systems);
-            console.log('we expected: ', keys.length)
-            //Quack quack, there aren't enough systems in the unvierse...
-            
+
+            var subset = flatten(layers);
+            angular.copy(subset, systems);
+
             function goDeeper() {
                 //Add new layer for the next set of systems
                 layers.push([]);
@@ -118,8 +89,16 @@
                 //The system is new
                 return true;
             }
+            function flatten(layers) {
+                var subset = {};
+                layers.forEach(function (layer) {
+                    layer.forEach(function (systemId) {
+                        subset[systemId] = systems[systemId];
+                    });
+                });
+                return subset;
+            }
         }
-
 
         function filterByRegion(region) {
 
