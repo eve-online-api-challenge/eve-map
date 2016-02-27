@@ -13,7 +13,8 @@
         "mongodb": "2.1.x",
         "jade": "1.11.x",
         "uglify-js": "2.6.x",
-        "node-schedule": "1.0.x"
+        "node-schedule": "1.0.x",
+        "compression": "1.6.x"
     },
     "scripts": {
         "test": "supervisor --debug -n error -i src,public server.js"

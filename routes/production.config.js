@@ -1,5 +1,6 @@
 "use strict";
 var gzipStatic = require('connect-gzip-static');
+var compression = require('compression');
 var path = require('path');
 var publicPath = path.join(__dirname, '..', 'public');
 var indexPath = path.join(publicPath, 'index.html');
@@ -32,6 +33,8 @@ function ProductionConfig() {
         //Need this line else index will 1 year maxAge on cache
         app.get('/', self.getIndex);
         app.use(gzipStatic(publicPath, { maxAge: 31536000000, public: true }));
+        //Compress all the things!
+        app.use(compression());
     };
 
     self.getIndex = function getIndex(req, res, next) {
