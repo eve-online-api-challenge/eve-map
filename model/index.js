@@ -9,6 +9,7 @@ module.exports = function Model() {
         function init(error, db) {
             if (error) throw error;
             _db = db;
+            //Model init
             self.jumps = new JumpsModel(_db);
             cb();
         }

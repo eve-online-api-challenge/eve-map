@@ -5,7 +5,7 @@ var path = require('path');
 var http = require('http');
 var routes = require('./routes');
 var Model = require('./model');
-var JobScheduler = require('./jobs');
+var JobWrangler = require('./jobs');
 
 var Server = function () {
     var self = this;
@@ -31,6 +31,7 @@ var Server = function () {
     self.terminator = function (sig) {
         if (typeof sig === "string") {
             self.model.disconnect();
+            if(self.jobs) self.jobs.stopAll();
             console.log('%s: Received %s - terminating app', Date(Date.now()), sig);
             process.exit(1);
         }
@@ -55,13 +56,25 @@ var Server = function () {
     };
 
     self.start = function () {
-        self.model.connect(self.mongoConnectionString, startServer);
+        self.model.connect(self.mongoConnectionString, modelReadyCb);
+
+        function modelReadyCb() {
+            startServer();
+            startJobs();
+        }
+        
+        function startJobs() {
+            self.jobs = new JobWrangler(self.model);
+            self.jobs.startAll();
+        }
+        
         function startServer() {
             var app = express();
             app.set('port', self.port);
             routes(app, self.productionMode);
             http.createServer(app).listen(self.port, self.ipaddress, logStart);
         }
+
         function logStart() {
             console.log('%s: Node server started on %s:%d', Date(Date.now()), self.ipaddress, self.port);
         }

@@ -3,7 +3,10 @@ var https = require('https');
 var parseString = require('xml2js').parseString;
 var schedule = require('node-schedule');
 
-function SystemJumpsJob(model) {
+module.exports = JumpsJob;
+
+function JumpsJob(models) {
+    var model = models.jumps;
     var job, self = this;
 
     this.start = function () {
@@ -11,7 +14,7 @@ function SystemJumpsJob(model) {
     };
 
     this.stop = function () {
-        job.cancel();
+        if (job) job.cancel();
     };
 
     var handleResponse = function (res) {
@@ -21,11 +24,18 @@ function SystemJumpsJob(model) {
         })
         res.on('end', function createObj() {
             parseString(doc, function (err, obj) {
-                var nextJobStartTime, jumps;
+                var nextJobStartTime;
                 if (!err) {
-                    addJumps(jumps, obj.eveapi.result[0].rowset[0].row);
-                    model.insert(jumps, doNothing, doNothing);
-                    nextJobStartTime = new Date(obj.somepropertyidontknowbecauseeveisoffline);
+                    var doc = { jumps: [] };
+                    var cachedTill = new Date(obj.eveapi.cachedUntil[0]).valueOf();
+                    var serverTime = new Date(obj.eveapi.currentTime[0]).valueOf();
+                    var localTIme = new Date().valueOf();
+                    addJumps(doc.jumps, obj.eveapi.result[0].rowset[0].row);
+                    //Use timestamp as id to prevent duplicates
+                    doc._id = cachedTill;
+                    model.insert(doc, doNothing, doNothing);
+                    //Give it another 15 seconds, just in case they only just started their job
+                    nextJobStartTime = new Date(localTIme + cachedTill - serverTime + 15000);
                 }
                 else {
                     //Try again in half an hour
@@ -41,7 +51,7 @@ function SystemJumpsJob(model) {
         var i, system, l = systems.length;
         for (i = 0; i < l; i++) {
             system = systems[i].$;
-            jumps.push({ system: system.solarSystemID, jumps: system.shipJumps });
+            jumps.push({ system: Number(system.solarSystemID), jumps: Number(system.shipJumps) });
         }
     };
 
