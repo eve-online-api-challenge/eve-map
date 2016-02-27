@@ -29,8 +29,8 @@ jumpCsv
 function addSystem(o) {
     kspace[o.SOLARSYSTEMID] = {
         name: o.SOLARSYSTEMNAME,
-        region: Number(o.REGIONID),
-        constellation: Number(o.CONSTELLATIONID),
+        region: o.REGIONID,
+        constellation: o.CONSTELLATIONID,
         x: Number(o.X),
         y: Number(o.Y),
         z: Number(o.Z),
