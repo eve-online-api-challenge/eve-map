@@ -9,6 +9,6 @@ module.exports = function JumpsModel(db) {
     this.findMostRecent = function findMostRecent(success, error) {
         const find = {};
         const options = { sort: { '$natural': -1 } };
-        c.find(find, options, h.findOne(success, error));
+        c.findOne(find, options, h.findOne(success, error));
     };
 }

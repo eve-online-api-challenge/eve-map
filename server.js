@@ -4,7 +4,7 @@ var express = require('express');
 var path = require('path');
 var http = require('http');
 var routes = require('./routes');
-var Model = require('./model');
+var Models = require('./model');
 var JobWrangler = require('./jobs');
 
 var Server = function () {
@@ -30,7 +30,7 @@ var Server = function () {
 
     self.terminator = function (sig) {
         if (typeof sig === "string") {
-            self.model.disconnect();
+            self.models.disconnect();
             if(self.jobs) self.jobs.stopAll();
             console.log('%s: Received %s - terminating app', Date(Date.now()), sig);
             process.exit(1);
@@ -52,11 +52,11 @@ var Server = function () {
     self.initialize = function () {
         self.setupVariables();
         self.setupTerminationHandlers();
-        self.model = new Model();
+        self.models = new Models();
     };
 
     self.start = function () {
-        self.model.connect(self.mongoConnectionString, modelReadyCb);
+        self.models.connect(self.mongoConnectionString, modelReadyCb);
 
         function modelReadyCb() {
             startServer();
@@ -64,14 +64,14 @@ var Server = function () {
         }
         
         function startJobs() {
-            self.jobs = new JobWrangler(self.model);
+            self.jobs = new JobWrangler(self.models);
             self.jobs.startAll();
         }
         
         function startServer() {
             var app = express();
             app.set('port', self.port);
-            routes(app, self.productionMode);
+            routes(app, self.productionMode, self.models);
             http.createServer(app).listen(self.port, self.ipaddress, logStart);
         }
 
