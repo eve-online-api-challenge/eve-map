@@ -49,9 +49,9 @@ function sortSpaceTypes() {
     var keys = Object.keys(kspace);
     var i, l = keys.length;
     for (i = 0; i < l; i++) {
-        if (kspace[keys[i]].region === 10000004
-            || kspace[keys[i]].region === 10000019
-            || kspace[keys[i]].region === 10000017) {
+        if (kspace[keys[i]].region === "10000004"
+            || kspace[keys[i]].region === "10000019"
+            || kspace[keys[i]].region === "10000017") {
             jove[keys[i]] = kspace[keys[i]];
             delete kspace[keys[i]];
         }
