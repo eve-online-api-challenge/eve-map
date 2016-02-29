@@ -7,13 +7,19 @@
     function universeFactory(provider) {
         //Initialization, start with all systems
         var systems = {};
+        var connections = {};
         var limits = { xMin: 0, xMax: 0, yMin: 0, yMax: 0, zMin: 0, zMax: 0 };
 
         function initialize() {
             return provider.getKspace().then(function () {
                 angular.copy(provider.systems, systems);
-                updateSubsetLimits();
+                update();
             });
+        }
+
+        function update() {
+            updateSubsetLimits();
+            updateConnections();
         }
 
         function updateSubsetLimits() {
@@ -54,7 +60,7 @@
 
             var subset = flatten(layers);
             angular.copy(subset, systems);
-            updateSubsetLimits();
+            update();
 
             function goDeeper() {
                 //Add new layer for the next set of systems
@@ -109,6 +115,30 @@
 
         function filterSecurityLessThan(sec) {
 
+        }
+
+        function updateConnections() {
+            var keys = Object.keys(systems);
+            angular.copy({}, connections);
+
+            for (var i = 0, l = keys.length; i < l; i++) {
+                var from = keys[i];
+                var system = systems[from];
+                for (var j = 0, m = system.connections.length; j < m; j++) {
+                    var to = system.connections[j];
+                    if (connections[from]) {
+                        if (connections[from].indexOf(to) === -1)
+                            connections[from].push(to);
+                    }
+                    else if (connections[to]) {
+                        if (connections[to].indexOf(from) === -1)
+                            connections[to].push(from);
+                    }
+                    else {
+                        connections[from] = [to];
+                    }
+                }
+            }
         }
 
         return {
