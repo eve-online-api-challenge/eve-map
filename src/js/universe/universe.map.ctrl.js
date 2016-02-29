@@ -10,7 +10,7 @@
             .then(createMap);
 
         function createMap() {
-            universe.filter.byJumpsFromSystem('30003271', 10);
+            // universe.filter.byJumpsFromSystem('30003271', 10);
 
             var universeMap = new UniverseMap(universe);
             universeMap.initialize();

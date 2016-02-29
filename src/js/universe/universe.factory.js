@@ -126,7 +126,10 @@
                 var system = systems[from];
                 for (var j = 0, m = system.connections.length; j < m; j++) {
                     var to = system.connections[j];
-                    if (connections[from]) {
+                    if (systems[to] === undefined) {
+                        //Points to outside system, don't include it
+                    }
+                    else if (connections[from]) {
                         if (connections[from].indexOf(to) === -1)
                             connections[from].push(to);
                     }
@@ -143,6 +146,7 @@
 
         return {
             systems: systems,
+            connections: connections,
             limits: limits,
             initialize: initialize,
             filter: filter

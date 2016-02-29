@@ -12,9 +12,12 @@ function UniverseMap(universe) {
     this.initialize = function initialize() {
         scene = new THREE.Scene();
         var systems = initializeUniverse();
+        var connections = initializeConnections();
         initializeCamera();
         resetCameraPosition();
+        scene.add(connections);
         scene.add(systems);
+        
         scene.add(camera);
     };
 
@@ -26,16 +29,37 @@ function UniverseMap(universe) {
 
     function initializeUniverse() {
         var geometry = new THREE.Geometry();
-        var material = new THREE.PointsMaterial({ size: 1 });
+        var material = new THREE.PointsMaterial({ size: 3000000000000000, color:0xff4d4d });
         var keys = Object.keys(universe.systems);
-        var i, l = keys.length;
-        for (i = 0; i < l; i++) {
+
+        for (var i = 0, l = keys.length; i < l; i++) {
             var vertex = new THREE.Vector3();
             var system = universe.systems[keys[i]];
             vertex.set(system.x, system.y, system.z);
             geometry.vertices.push(vertex);
         }
         return new THREE.Points(geometry, material);
+    }
+
+    function initializeConnections() {
+        var material = new THREE.LineBasicMaterial({ color: 0x595959 });
+        var geometry = new THREE.Geometry();
+        var connections = universe.connections;
+        var systems = universe.systems;
+        var keys = Object.keys(connections);
+
+        for (var i = 0, l = keys.length; i < l; i++) {
+            var systemID = keys[i];
+            var connectionIds = universe.connections[systemID];
+            var from = systems[systemID];
+            for (var j = 0, m = connectionIds.length; j < m; j++) {
+                var connectionId = connectionIds[j];
+                var to = systems[connectionId];
+                geometry.vertices.push(new THREE.Vector3(from.x, from.y, from.z));
+                geometry.vertices.push(new THREE.Vector3(to.x, to.y, to.z));
+            }
+        }
+        return new THREE.LineSegments(geometry, material);
     }
 
     function initializeCamera() {
