@@ -2,7 +2,7 @@ function UniverseMap(universe) {
     var screenWidth = window.innerWidth;
     var screenHeight = window.innerHeight;
     var aspectRatio = screenWidth / screenHeight;
-    var radialCamera, scene;
+    var camera, scene;
     var container = document.getElementById('systemView');
     var renderer = new THREE.WebGLRenderer();
     var controls;
@@ -12,16 +12,16 @@ function UniverseMap(universe) {
     this.initialize = function initialize() {
         scene = new THREE.Scene();
         var systems = initializeUniverse();
-        radialCamera = new RadialCamera();
-        radialCamera.initialize();
+        initializeCamera();
+        resetCameraPosition();
         scene.add(systems);
-        scene.add(radialCamera.camera);
+        scene.add(camera);
     };
 
     this.render = function render() {
-        requestAnimationFrame(render);
         controls.update();
-        renderer.render(scene, radialCamera.camera);
+        renderer.render(scene, camera);
+        requestAnimationFrame(render);
     }
 
     function initializeUniverse() {
@@ -38,26 +38,41 @@ function UniverseMap(universe) {
         return new THREE.Points(geometry, material);
     }
 
-    function RadialCamera() {
-        var self = this;
+    function initializeCamera() {
         const fov = 50;
-        const limitNear = 0.1;
+        const limitNear = 1;
         const limitFar = Number.MAX_SAFE_INTEGER;
-        var x, y, z, radius;
-        this.camera = new THREE.PerspectiveCamera(fov, aspectRatio, limitNear, limitFar);
+        camera = new THREE.PerspectiveCamera(fov, aspectRatio, limitNear, limitFar);
+        controls = new THREE.TrackballControls(camera, renderer.domElement);
+        controls.rotateSpeed = 8;
+        controls.zoomSpeed = 5;
+    }
 
-        this.initialize = function initializeCamera() {
-            x = (universe.limits.xMin + universe.limits.xMax) / 2;
-            y = (universe.limits.yMin + universe.limits.yMax) / 2;
-            z = (universe.limits.zMin + universe.limits.zMax) / 2;
-            radius = universe.limits.zMax * 3;
-            self.camera.position.y = radius;
-            controls = new THREE.TrackballControls(self.camera, renderer.domElement);
-            controls.minDistance = radius / 10;
-            controls.maxDistance = radius * 2;
-            controls.target = new THREE.Vector3(x, y, z);
-            controls.rotateSpeed = 8;
-            controls.zoomSpeed = 5;
+    function resetCameraPosition() {
+        var x, y, z;
+        x = (universe.limits.xMin + universe.limits.xMax) / 2;
+        y = (universe.limits.yMin + universe.limits.yMax) / 2;
+        z = (universe.limits.zMin + universe.limits.zMax) / 2;
+
+        var radius = Math.abs(universe.limits.xMin - x);
+        radius = returnGreater(Math.abs(universe.limits.xMax - x), radius);
+        radius = returnGreater(Math.abs(universe.limits.yMin - y), radius);
+        radius = returnGreater(Math.abs(universe.limits.yMax - y), radius);
+        radius = returnGreater(Math.abs(universe.limits.zMin - z), radius);
+        radius = returnGreater(Math.abs(universe.limits.zMax - z), radius);
+
+        var cameraMaxRadius = radius * 5;
+        var cameraMinRadius = radius / 10;
+        camera.position.y = radius * 3;
+        controls.minDistance = cameraMinRadius;
+        controls.maxDistance = cameraMaxRadius;
+        controls.target = new THREE.Vector3(x, y, z);
+
+        function returnGreater(oldValue, newValue) {
+            if (newValue > oldValue)
+                return newValue;
+            else
+                return oldValue;
         }
     }
 }
