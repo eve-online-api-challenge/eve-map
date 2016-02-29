@@ -17,7 +17,7 @@ function UniverseMap(universe) {
         resetCameraPosition();
         scene.add(connections);
         scene.add(systems);
-        
+
         scene.add(camera);
     };
 
@@ -29,7 +29,7 @@ function UniverseMap(universe) {
 
     function initializeUniverse() {
         var geometry = new THREE.Geometry();
-        var material = new THREE.PointsMaterial({ size: 3000000000000000, color:0xff4d4d });
+        var material = new THREE.PointsMaterial({ size: 3000000000000000, color: 0xff4d4d });
         var keys = Object.keys(universe.systems);
 
         for (var i = 0, l = keys.length; i < l; i++) {
@@ -70,6 +70,7 @@ function UniverseMap(universe) {
         controls = new THREE.TrackballControls(camera, renderer.domElement);
         controls.rotateSpeed = 8;
         controls.zoomSpeed = 5;
+        controls.object.up.copy(new THREE.Vector3(1, 0, 0));
     }
 
     function resetCameraPosition() {
