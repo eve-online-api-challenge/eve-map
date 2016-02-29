@@ -17,27 +17,25 @@
         }
 
         function updateSubsetLimits() {
-            limits.xMin = 0, limits.xMax = 0;
-            limits.yMin = 0, limits.yMax = 0;
-            limits.zMin = 0, limits.zMax = 0;
+            limits.xMin = Number.MAX_VALUE, limits.xMax = -Number.MAX_VALUE;
+            limits.yMin = Number.MAX_VALUE, limits.yMax = -Number.MAX_VALUE;
+            limits.zMin = Number.MAX_VALUE, limits.zMax = -Number.MAX_VALUE;
 
             var keys = Object.keys(systems);
-            var i, l = keys.length;
 
-            for (i = 0; i < l; i++) {
+            for (var i = 0, l = keys.length; i < l; i++) {
                 var system = systems[keys[i]];
-
                 if (system.x > limits.xMax)
                     limits.xMax = system.x;
-                else if (system.x < limits.xMin)
+                if (system.x < limits.xMin)
                     limits.xMin = system.x;
                 if (system.y > limits.yMax)
                     limits.yMax = system.y;
-                else if (system.y < limits.yMin)
+                if (system.y < limits.yMin)
                     limits.yMin = system.y;
                 if (system.z > limits.zMax)
                     limits.zMax = system.z;
-                else if (system.z < limits.zMin)
+                if (system.z < limits.zMin)
                     limits.zMin = system.z;
             }
         }
@@ -56,6 +54,7 @@
 
             var subset = flatten(layers);
             angular.copy(subset, systems);
+            updateSubsetLimits();
 
             function goDeeper() {
                 //Add new layer for the next set of systems
