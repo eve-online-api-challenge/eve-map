@@ -14,7 +14,10 @@
         "jade": "1.11.x",
         "uglify-js": "2.6.x",
         "node-schedule": "1.0.x",
-        "compression": "1.6.x"
+        "compression": "1.6.x",
+        "body-parser": "1.15.x",
+        "cookie-parser": "1.4.x",
+        "bcrypt-nodejs": "0.0.x"
     },
     "scripts": {
         "test": "supervisor --debug -n error -i src,public server.js"

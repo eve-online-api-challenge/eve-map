@@ -7,5 +7,7 @@
     "universe.module.js",
     "universe/universe.factory.js",
     "universe/universe.map.ctrl.js",
-    "universe.map.js"
+    "universe.map.js",
+    "user.module.js",
+    "user/user.ctrl.js"
 ]

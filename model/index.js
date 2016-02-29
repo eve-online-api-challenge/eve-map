@@ -1,5 +1,6 @@
 var MongoClient = require('mongodb').MongoClient;
 var JumpsModel = require('./jumps.model');
+var UserModel = require('./user.model');
 
 module.exports = function Model() {
     var _db, self = this;
@@ -11,6 +12,7 @@ module.exports = function Model() {
             _db = db;
             //Model init
             self.jumps = new JumpsModel(_db);
+            self.user = new UserModel(_db);
             cb();
         }
     }

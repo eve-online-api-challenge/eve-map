@@ -3,6 +3,10 @@ mixin jsHelper
         script(src=scriptSrc.relative)
 
 mixin templateHelper
+    script(type="text/ng-template" id='/templates/account.login.html')
+        include templates/account.login.jade
+    script(type="text/ng-template" id='/templates/account.register.html')
+        include templates/account.register.jade
     script(type="text/ng-template" id='/templates/landing.html')
         include templates/landing.jade
     script(type="text/ng-template" id='/templates/universe.map.html')

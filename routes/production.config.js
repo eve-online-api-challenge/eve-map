@@ -4,7 +4,7 @@ var compression = require('compression');
 var path = require('path');
 var publicPath = path.join(__dirname, '..', 'public');
 var indexPath = path.join(publicPath, 'index.html');
-var sendIndexOpts = { maxAge: 3600000 }
+var sendIndexOpts = { maxAge: 3600000 };
 
 module.exports = ProductionConfig;
 

@@ -1,7 +1,7 @@
 "use strict";
 var express = require('express');
 
-module.exports.routes = JumpsRouter;
+module.exports.router = JumpsRouter;
 module.exports.Ctrl = JumpsCtrl;
 
 function JumpsRouter(ctrl) {
