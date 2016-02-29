@@ -26,18 +26,26 @@ function JumpsJob(models) {
             parseString(doc, function (err, obj) {
                 var nextJobStartTime;
                 if (!err) {
-                    var doc = { jumps: [] };
-                    var cachedTill = new Date(obj.eveapi.cachedUntil[0]).valueOf();
-                    var serverTime = new Date(obj.eveapi.currentTime[0]).valueOf();
-                    var localTIme = new Date().valueOf();
-                    addJumps(doc.jumps, obj.eveapi.result[0].rowset[0].row);
-                    //Use timestamp as id to prevent duplicates
-                    doc._id = cachedTill;
-                    model.insert(doc, doNothing, doNothing);
-                    //Give it another 15 seconds, just in case they only just started their job
-                    nextJobStartTime = new Date(localTIme + cachedTill - serverTime + 15000);
+                    try {
+                        var doc = { jumps: [] };
+                        var cachedTill = new Date(obj.eveapi.cachedUntil[0]).valueOf();
+                        var serverTime = new Date(obj.eveapi.currentTime[0]).valueOf();
+                        var localTIme = new Date().valueOf();
+                        addJumps(doc.jumps, obj.eveapi.result[0].rowset[0].row);
+                        //Use timestamp as id to prevent duplicates
+                        doc._id = cachedTill;
+                        model.insert(doc, doNothing, doNothing);
+                        //Give it another 15 seconds, just in case they only just started their job
+                        nextJobStartTime = new Date(localTIme + cachedTill - serverTime + 15000);
+
+                    }
+                    catch (e) {
+                        console.log(e)
+                        err = e;
+                    }
                 }
-                else {
+
+                if (err) {
                     //Try again in half an hour
                     nextJobStartTime = new Date(Date.now() + 1800000);
                 }
