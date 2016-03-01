@@ -11,7 +11,7 @@ module.exports = function UserModel(db) {
     this.validateLogin = function (userId, password, success, error) {
         //In this case we can't redact, delete sec instead
         var find = { '_id': userId };
-        c.findOne(find, validatePassword, error);
+        c.findOne(find, h.findOne(validatePassword, error));
 
         function validatePassword(doc) {
             if (auth.compare(password, doc.sec.hash)) {
@@ -30,7 +30,10 @@ module.exports = function UserModel(db) {
 
         var find = { '_id': userId };
         var update = { '$push': { 'sec.sessions': session } };
-        c.update(find, update, h.update(success, error));
+        c.update(find, update, h.update(setSession, error));
+        function setSession() {
+            success(session._id);
+        }
     };
 
     this.getSession = function (sessionId, success, error) {
