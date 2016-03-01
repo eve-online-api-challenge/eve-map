@@ -43,8 +43,6 @@ module.exports = function UserModel(db) {
     this.endSession = function (sessionId, success, error) {
         var find = { 'sec.sessions': sessionId };
         var update = { '$pull': { 'sec.sessions': sessionId } };
-        console.log(find);
-        console.log(update)
         c.update(find, update, h.update(success, error));
     };
 
