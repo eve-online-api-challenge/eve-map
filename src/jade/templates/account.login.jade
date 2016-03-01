@@ -1,9 +1,8 @@
-form(novalidate="" ng-submit="login()")
-    label(for="name") UserName
-    input(type="text" ng-model="userName" name="userName")
+form(novalidate="" ng-submit="form.$valid && login()" name="form")
+    label(for="name") User Name
+    input(type="text" ng-model="userStub.userName" name="userName" required="")
     
-    label(for="password")
-    input(type="password" ng-model="password" name="password")
+    label(for="password") Password
+    input(type="password" ng-model="userStub.password" name="password" required="")
     
-    label(for="confirm")
-    input(type="password" ng-model="confirm" name="confirm")
+    input(type="submit" value="Login")

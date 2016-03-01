@@ -28,8 +28,8 @@ function initialize(app, productionMode, models) {
     
     //Service routes
     app.use(auth.authenticate(models));
-    app.use('/universe', universe(models));
-    app.use('/user', user(models, productionMode));
+    app.use(universe(models));
+    app.use(user(models, productionMode));
     
     //Catch all
     app.get('*', config.getIndex);

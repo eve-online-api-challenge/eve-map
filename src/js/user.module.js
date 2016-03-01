@@ -17,13 +17,13 @@
                 url: '/login',
                 controller: 'LoginCtrl',
                 templateUrl: '/templates/account.login.html',
-                requireAuth: false
+                disallowAuthed: true
             })
             .state('user.register', {
                 url: '/register',
                 controller: 'RegistrationCtrl',
                 templateUrl: '/templates/account.register.html',
-                requireAuth: false
+                disallowAuthed: true
             });
     }
 

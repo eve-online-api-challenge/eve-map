@@ -16,7 +16,7 @@ module.exports.authenticate = function (models) {
         if (sessionId === undefined)
             return next();
 
-        model.getSession(sessionId, next, success, error);
+        model.getSession(sessionId, success, error);
 
         function success(user) {
             req.user = user;

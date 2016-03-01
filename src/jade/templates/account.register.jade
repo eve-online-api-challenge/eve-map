@@ -1,9 +1,16 @@
-form(novalidate="" ng-submit="register()")
-    label(for="name") UserName
-    input(type="text" ng-model="userName" name="userName")
+form(novalidate="" ng-submit="form.$valid && register()" name="form")
+    p
+        label(for="name") UserName
+        input(type="text" ng-model="newUser.userName" name="userName" required="")
     
-    label(for="password")
-    input(type="password" ng-model="password" name="password")
+    p
+        label(for="password") Password
+        input(type="password" ng-model="newUser.password" name="password" required="")
     
-    label(for="confirm")
-    input(type="password" ng-model="confirm" name="confirm")
+    p
+        label(for="confirm") Confirm Password
+        input(type="password" ng-model="newUser.confirm" name="confirm" required="")
+    
+    p(ng-hide="!passwordMissMatch") Passwords don't match
+    
+    p: input(type="submit" value="Register")

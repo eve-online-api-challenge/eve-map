@@ -12,6 +12,13 @@ html(ng-app="fight.club" ng-strict-di="")
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     link(href=css rel="stylesheet")
   body
+    div(ng-hide="!user._id")
+        p {{user.id}}
+        p: a(ng-click="logout()") Logout
+    div(ng-hide="user._id")
+        p: a(ui-sref="user.login") login
+        p: a(ui-sref="user.register") register
+        
     div(ui-view="")
     +templateHelper
     +jsHelper
