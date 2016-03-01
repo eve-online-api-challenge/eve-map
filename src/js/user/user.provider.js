@@ -3,9 +3,9 @@
 
     angular
         .module('user')
-        .factory('userFactory', ['$http', 'persistenceFactory', userFactory]);
+        .factory('userFactory', ['$http', 'persistenceFactory', '$window', '$httpParamSerializer', userFactory]);
 
-    function userFactory($http, persistence) {
+    function userFactory($http, persistence, $window, $httpParamSerializer) {
         function getUser() {
             var promise = $http.get('/user/me');
             promise.success(function (data) {
@@ -21,6 +21,20 @@
 
         function login(userStub) {
             return $http.post('/user/login', userStub)
+        }
+
+        function totalRetardation() {
+            var host = 'https://login.eveonline.com/oauth/authorize?';
+            var cb = 'https://fight-challenged.rhcloud.com/#/crest/callback';
+            cb = 'http://localhost:8082/#/crest/callback';
+            var params = {
+                'response_type': 'code',
+                'redirect_uri': cb,
+                'client_id': '11d77446d3054979aaf51054b467ea67',
+                'scope': 'characterLocationRead characterNavigationWrite publicData'
+            };
+
+            $window.location.href = host + $httpParamSerializer(params);
         }
 
         function logout() {

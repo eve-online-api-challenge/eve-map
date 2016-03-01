@@ -1,6 +1,7 @@
 "use strict";
 var express = require('express');
 var auth = require('../auth');
+var https = require('https');
 
 module.exports.router = accountRouter;
 module.exports.Ctrl = AccountCtrl;
@@ -11,6 +12,7 @@ function accountRouter(ctrl) {
     router.post('/logout', ctrl.logout);
     router.post('/register', ctrl.register);
     router.get('/me', ctrl.getMe);
+    router.post('/sso/:code', ctrl.fuckyousso)
     return router;
 }
 
@@ -18,6 +20,28 @@ function AccountCtrl(models, productionMode) {
     var model = models.user;
     var cookieSettings = { httpOnly: true };
     if (productionMode) cookieSettings.secure = true;
+
+    this.fuckyousso = function (req, res, next) {
+        if (!req.params.code)
+            next({ invalidInput: true });
+
+        var options = {
+            hostname: 'login.eveonline.com',
+            path: '/oauth/token?grant_type=authorization_code&code=' + req.params.code,
+            method: 'POST',
+            headers: {
+                Authorization: 'Basic ' + (new Buffer("11d77446d3054979aaf51054b467ea67:ZHIgybKxgeYQFSYumPuhR0FZhk6IsV3e48ScPg8K").toString('base64')),
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        };
+
+
+        https.request(options, function foo(res) {
+            res.on('data', function (data) {
+                console.log('yeah, just mostly fuck you');
+            });
+        });
+    }
 
     this.login = function (req, res, next) {
         var _id = req.body.userName;

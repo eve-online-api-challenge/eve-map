@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('fight.club', ['ui.router', 'persistence', 'universe', 'user'])
+        .module('fight.club', ['ui.router', 'persistence', 'universe', 'user', 'crest'])
         .config(['$stateProvider', '$urlRouterProvider', configureApp])
         .run(['persistenceFactory', 'userFactory', '$rootScope', '$state', configureAuth]);
 
