@@ -10,7 +10,7 @@ function accountRouter(ctrl) {
     router.post('/login', ctrl.login);
     router.post('/logout', ctrl.logout);
     router.post('/register', ctrl.register);
-    router.get('/me', auth.requireAuth, ctrl.getMe);
+    router.get('/me', ctrl.getMe);
     return router;
 }
 
@@ -74,6 +74,9 @@ function AccountCtrl(models, productionMode) {
     }
 
     this.getMe = function (req, res, next) {
-        res.json(req.user);
+        if (req.user !== undefined)
+            res.json(req.user);
+        else
+            res.json({ noOne: true });
     }
 }

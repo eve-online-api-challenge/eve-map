@@ -25,9 +25,11 @@
             systems: {},
             connections: {}
         };
+
         function set(prop, data) {
             angular.copy(data, db[prop]);
         }
+
         return {
             db: db,
             set: set

@@ -25,25 +25,26 @@ module.exports = function UserModel(db) {
     }
 
     this.startSession = function (userId, success, error) {
-        var session = { 'started': Date.now() };
-        session._id = auth.createRandomHash();
+        var sessionId = auth.createRandomHash();
 
         var find = { '_id': userId };
-        var update = { '$push': { 'sec.sessions': session } };
+        var update = { '$push': { 'sec.sessions': sessionId } };
         c.update(find, update, h.update(setSession, error));
         function setSession() {
-            success(session._id);
+            success(sessionId);
         }
     };
 
     this.getSession = function (sessionId, success, error) {
-        var find = { 'sec.sessions._id': sessionId };
+        var find = { 'sec.sessions': sessionId };
         c.findOne(find, redact, h.findOne(success, error));
     };
 
     this.endSession = function (sessionId, success, error) {
-        var find = { 'sec.sessions._id': sessionId };
-        var update = { '$pull': { 'sessions': sessionId } };
+        var find = { 'sec.sessions': sessionId };
+        var update = { '$pull': { 'sec.sessions': sessionId } };
+        console.log(find);
+        console.log(update)
         c.update(find, update, h.update(success, error));
     };
 
