@@ -8,6 +8,8 @@
         //Initialization, start with all systems
         var systems = {};
         var connections = {};
+        var scalingFactor = 0.00000000000001;
+        
         var limits = { xMin: 0, xMax: 0, yMin: 0, yMax: 0, zMin: 0, zMax: 0 };
 
         function initialize() {
@@ -20,6 +22,7 @@
         function update() {
             updateSubsetLimits();
             updateConnections();
+            scale(scalingFactor);
         }
 
         function updateSubsetLimits() {
@@ -117,6 +120,20 @@
 
         }
 
+        function scale(factor) {
+            var obj, keys = Object.keys(systems);
+            for (var i = 0, l = keys.length; i < l; i++) {
+                obj = systems[keys[i]];
+                obj.x = obj.x * factor;
+                obj.y = obj.y * factor;
+                obj.z = obj.z * factor;
+            }
+            keys = Object.keys(limits);
+            for (var i = 0, l = keys.length; i < l; i++) {
+                limits[keys[i]] = limits[keys[i]] * factor;
+            }
+        }
+
         function updateConnections() {
             var keys = Object.keys(systems);
             angular.copy({}, connections);
@@ -145,44 +162,13 @@
         }
 
         return {
+            scalingFactor: scalingFactor,
             systems: systems,
             connections: connections,
             limits: limits,
             initialize: initialize,
             filter: filter
         }
-    }
-
-    //want something injectable
-    angular
-        .module('universe')
-        .factory('universeHttpProvider', ['$http', universeHttpProvider]);
-
-    function universeHttpProvider($http) {
-        var systems = {};
-        var jumps = {};
-
-        function getKspace() {
-            return $http.get('/sde/kspace.json')
-                .success(function gotKspace(data) {
-                    angular.copy(data, systems);
-                });
-        }
-
-        function getJumps() {
-            var promise = $http.get('/universe/jumps/latest');
-            promise.success(function gotKspace(data) {
-                angular.copy(data.jumps, jumps);
-            });
-            return promise;
-        }
-
-        return {
-            systems: systems,
-            jumps: jumps,
-            getKspace: getKspace,
-            getJumps: getJumps
-        };
     }
 
 })();

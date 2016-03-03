@@ -1,44 +1,53 @@
 function UniverseMap(universe) {
+    //container
+    var container = document.getElementById('systemView');
     var screenWidth = window.innerWidth;
     var screenHeight = window.innerHeight;
     var aspectRatio = screenWidth / screenHeight;
-    var camera, scene;
-    var container = document.getElementById('systemView');
+    
+    //renderer
     var renderer = new THREE.WebGLRenderer();
-    var controls;
     renderer.setSize(screenWidth, screenHeight);
-    container.appendChild(renderer.domElement);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    
+    //scene
+    var universeRadius, universeX, universeY, universeZ;
+    var camera, scene;
+    
+    //controls
+    var controls;
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
 
     this.initialize = function initialize() {
-        scene = new THREE.Scene();
-        var systems = initializeUniverse();
-        var connections = initializeConnections();
+        container.appendChild(renderer.domElement);
+        document.addEventListener('mousemove', onMouseMove, false);
+        calculateSystemGeometry();
         initializeCamera();
-        resetCameraPosition();
-        scene.add(connections);
-        scene.add(systems);
-
+        initializeControls();
+        scene = new THREE.Scene();
+        initializeUniverse();
         scene.add(camera);
     };
 
-    this.render = function render() {
-        controls.update();
-        renderer.render(scene, camera);
-        requestAnimationFrame(render);
-    }
-
     function initializeUniverse() {
         var geometry = new THREE.Geometry();
-        var material = new THREE.PointsMaterial({ size: 3000000000000000, color: 0xff4d4d });
+        var color = new THREE.Color(0x895959);
         var keys = Object.keys(universe.systems);
 
         for (var i = 0, l = keys.length; i < l; i++) {
-            var vertex = new THREE.Vector3();
             var system = universe.systems[keys[i]];
-            vertex.set(system.x, system.y, system.z);
-            geometry.vertices.push(vertex);
+            var v = new THREE.Vector3(system.x, system.y, system.z);
+            geometry.colors.push(color);
+            geometry.vertices.push(v);
         }
-        return new THREE.Points(geometry, material);
+
+        geometry.computeBoundingBox();
+        var pointSize = universeRadius / keys.length * 100;
+        var material = new THREE.PointsMaterial({ vertexColors: THREE.VertexColors, size: pointSize });
+        //trying system size as param multiplied by fudge factor...
+        raycaster.params.Points.threshold = pointSize / 2;
+        scene.add(new THREE.Points(geometry, material));
     }
 
     function initializeConnections() {
@@ -67,37 +76,48 @@ function UniverseMap(universe) {
         const limitNear = 1;
         const limitFar = Number.MAX_SAFE_INTEGER;
         camera = new THREE.PerspectiveCamera(fov, aspectRatio, limitNear, limitFar);
+    }
+
+    function initializeControls() {
         controls = new THREE.TrackballControls(camera, renderer.domElement);
         controls.rotateSpeed = 8;
         controls.zoomSpeed = 5;
         controls.object.up.copy(new THREE.Vector3(1, 0, 0));
+        controls.minDistance = universeRadius * 5;
+        controls.maxDistance = universeRadius / 10;
+        controls.target = new THREE.Vector3(universeX, universeY, universeZ);
     }
 
-    function resetCameraPosition() {
-        var x, y, z;
-        x = (universe.limits.xMin + universe.limits.xMax) / 2;
-        y = (universe.limits.yMin + universe.limits.yMax) / 2;
-        z = (universe.limits.zMin + universe.limits.zMax) / 2;
+    function calculateSystemGeometry() {
+        universeX = (universe.limits.xMin + universe.limits.xMax) / 2;
+        universeY = (universe.limits.yMin + universe.limits.yMax) / 2;
+        universeZ = (universe.limits.zMin + universe.limits.zMax) / 2;
 
-        var radius = Math.abs(universe.limits.xMin - x);
-        radius = returnGreater(Math.abs(universe.limits.xMax - x), radius);
-        radius = returnGreater(Math.abs(universe.limits.yMin - y), radius);
-        radius = returnGreater(Math.abs(universe.limits.yMax - y), radius);
-        radius = returnGreater(Math.abs(universe.limits.zMin - z), radius);
-        radius = returnGreater(Math.abs(universe.limits.zMax - z), radius);
-
-        var cameraMaxRadius = radius * 5;
-        var cameraMinRadius = radius / 10;
-        camera.position.y = radius * 3;
-        controls.minDistance = cameraMinRadius;
-        controls.maxDistance = cameraMaxRadius;
-        controls.target = new THREE.Vector3(x, y, z);
-
+        universeRadius = Math.abs(universe.limits.xMin - universeX);
+        universeRadius = returnGreater(Math.abs(universe.limits.xMax - universeX), universeRadius);
+        universeRadius = returnGreater(Math.abs(universe.limits.yMin - universeY), universeRadius);
+        universeRadius = returnGreater(Math.abs(universe.limits.yMax - universeY), universeRadius);
+        universeRadius = returnGreater(Math.abs(universe.limits.zMin - universeZ), universeRadius);
+        universeRadius = returnGreater(Math.abs(universe.limits.zMax - universeZ), universeRadius);
         function returnGreater(oldValue, newValue) {
             if (newValue > oldValue)
                 return newValue;
             else
                 return oldValue;
         }
+    }
+
+    function onMouseMove(event) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    }
+
+    this.render = function render() {
+        requestAnimationFrame(render);
+        raycaster.setFromCamera(mouse, camera);
+        var intersects = raycaster.intersectObjects(scene.children);
+        if (intersects[0]) console.log(intersects[0].point)
+        renderer.render(scene, camera);
+        controls.update();
     }
 }

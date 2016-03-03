@@ -10,7 +10,8 @@
             .state('universe', {
                 url: '/universe',
                 controller: 'UniverseMapCtrl',
-                templateUrl: '/templates/universe.map.html'
+                templateUrl: '/templates/universe.map.html',
+                anyAuth: true
             });
     }
 
