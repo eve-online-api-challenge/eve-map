@@ -5,11 +5,26 @@ var CSVStream = require('csv-streamer');
 var content = require('../lib/content');
 var jumpCsv = new CSVStream({ headers: true });
 var ssCsv = new CSVStream({ headers: true });
+var regionCsv = new CSVStream({ headers: true });
 var kspace = {};
 var wspace = {};
 var jove = {};
+var regions = {};
 
 fs.createReadStream('./mapSolarSystems.csv').pipe(ssCsv);
+
+fs.createReadStream('./mapRegions.csv').pipe(regionCsv);
+
+regionCsv
+    .on('data', function (entry) {
+        regions[entry.REGIONID] = entry.REGIONNAME;
+    })
+    .on('end', function () {
+        var file = path.join(__dirname, '..', 'public', 'sde', 'regions.json');
+        var stringy = JSON.stringify(regions);
+        content.save(file, stringy);
+        content.gzipSaveString(file, stringy);
+    });
 
 ssCsv
     .on('data', addSystem)
