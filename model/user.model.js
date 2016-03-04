@@ -21,7 +21,7 @@ module.exports = function UserModel(db) {
 
     this.getSession = function (sessionId, success, error) {
         var find = { 'sec.sessions': sessionId };
-        c.findOne(find, redact, h.findOne(success, error));
+        c.findOne(find, h.findOne(success, error));
     };
 
     this.endSession = function (sessionId, success, error) {
@@ -30,9 +30,13 @@ module.exports = function UserModel(db) {
         c.update(find, update, h.update(success, error));
     };
 
-
     this.createAccount = function (user, success, error) {
-        user.sec = {};
         c.insert(user, success, error);
+    };
+
+    this.updateAccessToken = function (userId, accessToken, success, error) {
+        var find = { _id: userId };
+        var update = { '$set': { 'sec.access': accessToken}  };
+        c.update(find, update, h.update(success, error));
     };
 }

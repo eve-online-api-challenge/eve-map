@@ -1,6 +1,5 @@
 module.exports.requireAuth = function (req, res, next) {
-    var loggedIn = req.user !== undefined;
-    if (loggedIn)
+    if (req.user !== undefined)
         next();
     else
         res.status(401).send();

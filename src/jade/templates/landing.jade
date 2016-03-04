@@ -1,4 +1,9 @@
-p(ng-hide="!user._id") {{user._id}}
-
-a(ng-hide="user._id" ng-click="eveAccountLogin()") Login with eve account
-a(ui-sref="universe") map
+.map#map-nav-top
+    p(ng-hide="!user._id") {{user._id}}
+    a(ng-hide="user._id" ng-click="login()") Login with eve account
+.map#map-nav-left
+    ul
+        li Filters:
+        li(ng-repeat="filter in filters") {{filter}}
+        li: a(ng-click="") Add 
+#universe-map

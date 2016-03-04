@@ -48,12 +48,10 @@ function UniverseMap(universe) {
             geometry.colors.push(color);
             geometry.vertices.push(v);
         }
-        
+
         geometry.computeBoundingBox();
         var pointSize;
         pointSize = 50 + Math.sqrt(1 / keys.length) * 1800;
-        console.log(keys.length, pointSize);
-
         var material = new THREE.PointsMaterial({ vertexColors: THREE.VertexColors, size: pointSize });
         //trying system size as param multiplied by fudge factor...
         raycaster.params.Points.threshold = pointSize / 2;

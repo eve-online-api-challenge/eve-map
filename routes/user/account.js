@@ -1,6 +1,7 @@
 "use strict";
 var express = require('express');
 var crest = require('../../lib/crest');
+var auth = require('../auth');
 
 module.exports.router = accountRouter;
 module.exports.Ctrl = AccountCtrl;
@@ -9,7 +10,7 @@ function accountRouter(ctrl) {
     var router = express.Router();
     router.post('/logout', ctrl.logout);
     router.get('/me', ctrl.getMe);
-    router.post('/sso/:code', ctrl.eveLogin)
+    router.post('/sso/:code', ctrl.eveLogin);
     return router;
 }
 
@@ -25,9 +26,15 @@ function AccountCtrl(models, productionMode) {
 
         function verified(data) {
             //Create an account if it doesn't already exist
+            //expires in ms, take 30 s off to allow for delay in req
             var user = {
                 _id: data.CharacterName,
-                eveId: data.CharacterID
+                eveId: data.CharacterID,
+                sec: {
+                    access: data.access_token,
+                    refresh: data.refresh_token,
+                    expires: Date.now() + data.expires_in * 1000 - 30000
+                }
             }
             
             //TODO ensure duplicate key error, else real error

@@ -12,6 +12,7 @@
         $stateProvider
             .state('landing', {
                 url: '/',
+                controller: 'UniverseMapCtrl',
                 templateUrl: '/templates/landing.html',
                 anyAuth: true
             });
@@ -20,7 +21,8 @@
     function configureAuth(persistence, userFactory, $rootScope, $state) {
         $rootScope.user = persistence.user;
         $rootScope.logout = userFactory.logout;
-        $rootScope.eveAccountLogin = userFactory.eveAccountLogin;
+        $rootScope.login = userFactory.login;
+        $rootScope.getLocation = userFactory.getLocation;
 
         $rootScope.$on('$stateChangeStart', interceptNerds);
         function interceptNerds(event, toState, toParams) {

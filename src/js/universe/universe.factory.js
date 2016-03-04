@@ -23,7 +23,6 @@
             updateSubsetLimits();
             updateConnections();
             scale(limits.scalingFactor);
-            console.log(limits)
         }
 
         function updateSubsetLimits() {
@@ -72,10 +71,15 @@
         }
 
         var filter = {
+            reset: resetFilters,
             byJumpsFromSystem: filterByJumpsFromSystem,
             byRegion: filterByRegion,
             bySecurityGreaterThan: filterSecurityGreaterThan,
             bySecurityLessThan: filterSecurityLessThan
+        }
+        
+        function resetFilters() {
+            angular.copy(provider.systems.k, systems);
         }
 
         function filterByJumpsFromSystem(startId, n) {

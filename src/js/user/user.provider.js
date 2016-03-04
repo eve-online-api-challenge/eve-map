@@ -36,8 +36,18 @@
             return promise;
         }
 
+        function getLocation() {
+            var promise = $http.get('/user/location');
+            promise.success(function (data) {
+                persistence.set('user', data);
+            });
+
+            return promise;
+        }
+
         return {
             getUser: getUser,
+            getLocation: getLocation,
             login: login,
             logout: logout
         };
