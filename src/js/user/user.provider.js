@@ -23,7 +23,7 @@
             return $http.post('/user/login', userStub)
         }
 
-        function totalRetardation() {
+        function eveAccountLogin() {
             var host = 'https://login.eveonline.com/oauth/authorize?';
             var cb = 'https://fight-challenged.rhcloud.com/#/crest/callback';
             cb = 'http://localhost:8082/#/crest/callback';
@@ -31,7 +31,7 @@
                 'response_type': 'code',
                 'redirect_uri': cb,
                 'client_id': '11d77446d3054979aaf51054b467ea67',
-                'scope': 'characterLocationRead characterNavigationWrite publicData'
+                'scope': 'characterLocationRead characterNavigationWrite publicData characterContactsRead'
             };
 
             $window.location.href = host + $httpParamSerializer(params);
@@ -48,6 +48,7 @@
         return {
             getUser: getUser,
             register: register,
+            eveAccountLogin: eveAccountLogin,
             login: login,
             logout: logout
         };

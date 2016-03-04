@@ -20,6 +20,7 @@
     function configureAuth(persistence, userFactory, $rootScope, $state) {
         $rootScope.user = persistence.user;
         $rootScope.logout = userFactory.logout;
+        $rootScope.eveAccountLogin = userFactory.eveAccountLogin;
 
         $rootScope.$on('$stateChangeStart', interceptNerds);
         function interceptNerds(event, toState, toParams) {
