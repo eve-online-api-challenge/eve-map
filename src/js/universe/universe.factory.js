@@ -8,21 +8,22 @@
         //Initialization, start with all systems
         var systems = {};
         var connections = {};
-        var scalingFactor = 0.00000000000001;
-        
-        var limits = { xMin: 0, xMax: 0, yMin: 0, yMax: 0, zMin: 0, zMax: 0 };
+
+        var limits = { xMin: 0, xMax: 0, yMin: 0, yMax: 0, zMin: 0, zMax: 0, scalingFactor: 1 };
 
         function initialize() {
-            return provider.getKspace().then(function () {
-                angular.copy(provider.systems, systems);
-                update();
-            });
+            return provider.getSpace()
+                .then(function () {
+                    angular.copy(provider.space.k, systems);
+                    update();
+                });
         }
 
         function update() {
             updateSubsetLimits();
             updateConnections();
-            scale(scalingFactor);
+            scale(limits.scalingFactor);
+            console.log(limits)
         }
 
         function updateSubsetLimits() {
@@ -46,6 +47,27 @@
                     limits.zMax = system.z;
                 if (system.z < limits.zMin)
                     limits.zMin = system.z;
+            }
+
+            limits.x = (limits.xMin + limits.xMax) / 2;
+            limits.y = (limits.yMin + limits.yMax) / 2;
+            limits.z = (limits.zMin + limits.zMax) / 2;
+
+            limits.radius = Math.abs(limits.xMin - limits.x);
+            limits.radius = returnGreater(Math.abs(limits.xMax - limits.x), limits.radius);
+            limits.radius = returnGreater(Math.abs(limits.yMin - limits.y), limits.radius);
+            limits.radius = returnGreater(Math.abs(limits.yMax - limits.y), limits.radius);
+            limits.radius = returnGreater(Math.abs(limits.zMin - limits.z), limits.radius);
+            limits.radius = returnGreater(Math.abs(limits.zMax - limits.z), limits.radius);
+            
+            //Normalize scale of subsection to radius 10 km
+            limits.scalingFactor = 10000 / limits.radius;
+
+            function returnGreater(oldValue, newValue) {
+                if (newValue > oldValue)
+                    return newValue;
+                else
+                    return oldValue;
             }
         }
 
@@ -108,16 +130,40 @@
             }
         }
 
-        function filterByRegion(region) {
-
+        function filterByRegion(regionId) {
+            var subset = {};
+            var keys = Object.keys(systems);
+            for (var i = 0, l = keys.length; i < l; i++) {
+                if (systems[keys[i]].regionId === regionId) {
+                    subset[keys[i]] = systems[keys[i]];
+                }
+            }
+            angular.copy(subset, systems);
+            update();
         }
 
         function filterSecurityGreaterThan(sec) {
-
+            var subset = {};
+            var keys = Object.keys(systems);
+            for (var i = 0, l = keys.length; i < l; i++) {
+                if (systems[keys[i]].sec >= sec) {
+                    subset[keys[i]] = systems[keys[i]];
+                }
+            }
+            angular.copy(subset, systems);
+            update();
         }
 
         function filterSecurityLessThan(sec) {
-
+            var subset = {};
+            var keys = Object.keys(systems);
+            for (var i = 0, l = keys.length; i < l; i++) {
+                if (systems[keys[i]].sec <= sec) {
+                    subset[keys[i]] = systems[keys[i]];
+                }
+            }
+            angular.copy(subset, systems);
+            update();
         }
 
         function scale(factor) {
@@ -162,7 +208,6 @@
         }
 
         return {
-            scalingFactor: scalingFactor,
             systems: systems,
             connections: connections,
             limits: limits,

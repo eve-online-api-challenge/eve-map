@@ -1,1 +1,7 @@
-#systemView
+.map#map-nav-top
+.map#map-nav-left
+    ul
+        li Filters:
+        li(ng-repeat="filter in filters") {{filter}}
+        li: a(ng-click="") Add 
+#universe-map

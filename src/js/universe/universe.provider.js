@@ -4,13 +4,13 @@
         .factory('universeHttpProvider', ['$http', universeHttpProvider]);
 
     function universeHttpProvider($http) {
-        var systems = {};
+        var space = {};
         var jumps = {};
-
-        function getKspace() {
-            return $http.get('/sde/kspace.json')
+        
+        function getSpace() {
+            return $http.get('/sde/space.json')
                 .success(function gotKspace(data) {
-                    angular.copy(data, systems);
+                    angular.copy(data, space);
                 });
         }
 
@@ -23,10 +23,10 @@
         }
 
         return {
-            systems: systems,
+            space: space,
             jumps: jumps,
-            getKspace: getKspace,
-            getJumps: getJumps
+            getSpace: getSpace,
+            getJumps: getJumps,
         };
     }
 })();
