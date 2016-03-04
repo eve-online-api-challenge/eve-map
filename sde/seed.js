@@ -10,21 +10,14 @@ var kspace = {};
 var wspace = {};
 var jove = {};
 var regions = {};
+var space = {
+    k: kspace,
+    w: wspace,
+    j: jove,
+    regions: regions
+};
 
 fs.createReadStream('./mapSolarSystems.csv').pipe(ssCsv);
-
-fs.createReadStream('./mapRegions.csv').pipe(regionCsv);
-
-regionCsv
-    .on('data', function (entry) {
-        regions[entry.REGIONID] = entry.REGIONNAME;
-    })
-    .on('end', function () {
-        var file = path.join(__dirname, '..', 'public', 'sde', 'regions.json');
-        var stringy = JSON.stringify(regions);
-        content.save(file, stringy);
-        content.gzipSaveString(file, stringy);
-    });
 
 ssCsv
     .on('data', addSystem)
@@ -38,7 +31,19 @@ jumpCsv
     })
     .on('end', function () {
         sortSpaceTypes();
-        writeFiles();
+        fs.createReadStream('./mapRegions.csv').pipe(regionCsv);
+
+    });
+
+regionCsv
+    .on('data', function (entry) {
+        regions[entry.REGIONID] = entry.REGIONNAME;
+    })
+    .on('end', function () {
+        var file = path.join(__dirname, '..', 'public', 'sde', 'space.json');
+        var stringy = JSON.stringify(space);
+        content.save(file, stringy);
+        content.gzipSaveString(file, stringy);
     });
 
 function addSystem(o) {
@@ -75,21 +80,4 @@ function sortSpaceTypes() {
             delete kspace[keys[i]];
         }
     }
-}
-
-function writeFiles() {
-    var file = path.join(__dirname, '..', 'public', 'sde', 'kspace.json');
-    var stringy = JSON.stringify(kspace);
-    content.save(file, stringy);
-    content.gzipSaveString(file, stringy);
-
-    file = path.join(__dirname, '..', 'public', 'sde', 'wspace.json');
-    stringy = JSON.stringify(wspace);
-    content.save(file, stringy);
-    content.gzipSaveString(file, stringy);
-
-    file = path.join(__dirname, '..', 'public', 'sde', 'jove.json');
-    stringy = JSON.stringify(jove);
-    content.save(file, stringy);
-    content.gzipSaveString(file, stringy);
 }
