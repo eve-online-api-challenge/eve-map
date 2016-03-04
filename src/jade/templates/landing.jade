@@ -1,2 +1,4 @@
-a(ng-click="eveAccountLogin()") Login with eve account
+p(ng-hide="!user._id") {{user._id}}
+
+a(ng-hide="user._id" ng-click="eveAccountLogin()") Login with eve account
 a(ui-sref="universe") map

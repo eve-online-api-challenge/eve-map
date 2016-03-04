@@ -15,18 +15,9 @@
             return promise;
         }
 
-        function register(newUser) {
-            return $http.post('/user/register', newUser);
-        }
-
-        function login(userStub) {
-            return $http.post('/user/login', userStub)
-        }
-
-        function eveAccountLogin() {
+        function login() {
             var host = 'https://login.eveonline.com/oauth/authorize?';
-            var cb = 'https://fight-challenged.rhcloud.com/#/crest/callback';
-            cb = 'http://localhost:8082/#/crest/callback';
+            var cb = 'http://localhost:8082/#/crest/callback';
             var params = {
                 'response_type': 'code',
                 'redirect_uri': cb,
@@ -47,8 +38,6 @@
 
         return {
             getUser: getUser,
-            register: register,
-            eveAccountLogin: eveAccountLogin,
             login: login,
             logout: logout
         };

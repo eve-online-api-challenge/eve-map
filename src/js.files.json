@@ -12,7 +12,5 @@
     "universe.map.js",
     "user.module.js",
     "user/user.provider.js",
-    "user/user.ctrl.js",
-    "crest.module.js",
-    "crest/crest.ctrl.js"
+    "user/user.ctrl.js"
 ]

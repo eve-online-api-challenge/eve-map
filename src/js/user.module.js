@@ -7,24 +7,11 @@
 
     function configureRoutes($stateProvider) {
         $stateProvider
-            .state('user', {
-                url: '/user',
-                controller: 'UserCtrl',
-                template: '<div ui-view></div>',
-                abstract: true,
+            .state('crestcb', {
+                url: '/crest/callback?code&state',
+                controller: 'CrestCtrl',
+                anyAuth: true
             })
-            .state('user.login', {
-                url: '/login',
-                controller: 'LoginCtrl',
-                templateUrl: '/templates/account.login.html',
-                disallowAuthed: true
-            })
-            .state('user.register', {
-                url: '/register',
-                controller: 'RegistrationCtrl',
-                templateUrl: '/templates/account.register.html',
-                disallowAuthed: true
-            });
     }
 
 })();
