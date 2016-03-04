@@ -8,22 +8,6 @@ var redact = { sec: 0 };
 module.exports = function UserModel(db) {
     var c = db.collection('users');
 
-    this.validateLogin = function (userId, password, success, error) {
-        //In this case we can't redact, delete sec instead
-        var find = { '_id': userId };
-        c.findOne(find, h.findOne(validatePassword, error));
-
-        function validatePassword(doc) {
-            if (auth.compare(password, doc.sec.hash)) {
-                delete doc.sec;
-                success(doc);
-            }
-            else {
-                error({ authFail: true });
-            }
-        }
-    }
-
     this.startSession = function (userId, success, error) {
         var sessionId = auth.createRandomHash();
 
@@ -46,8 +30,9 @@ module.exports = function UserModel(db) {
         c.update(find, update, h.update(success, error));
     };
 
-    this.createAccount = function (user, password, success, error) {
-        user.sec = { hash: auth.hash(password) };
+
+    this.createAccount = function (user, success, error) {
+        user.sec = {};
         c.insert(user, success, error);
     };
 }

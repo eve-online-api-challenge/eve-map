@@ -1,17 +1,13 @@
 "use strict";
 var express = require('express');
-var auth = require('../auth');
-var https = require('https');
-var querystring = require('querystring');
+var crest = require('../../lib/crest');
 
 module.exports.router = accountRouter;
 module.exports.Ctrl = AccountCtrl;
 
 function accountRouter(ctrl) {
     var router = express.Router();
-    router.post('/login', ctrl.login);
     router.post('/logout', ctrl.logout);
-    router.post('/register', ctrl.register);
     router.get('/me', ctrl.getMe);
     router.post('/sso/:code', ctrl.eveLogin)
     return router;
@@ -25,57 +21,25 @@ function AccountCtrl(models, productionMode) {
     this.eveLogin = function (req, res, next) {
         if (!req.params.code)
             next({ invalidInput: true });
+        crest.verify(req.params.code, verified, next);
 
-        var data = querystring.stringify({ grant_type: 'authorization_code', code: req.params.code })
-
-        var options = {
-            hostname: 'login.eveonline.com',
-            path: '/oauth/token',
-            method: 'POST',
-            headers: {
-                Authorization: 'Basic ' + (new Buffer("11d77446d3054979aaf51054b467ea67:ZHIgybKxgeYQFSYumPuhR0FZhk6IsV3e48ScPg8K").toString('base64')),
-                'Content-Type': 'application/x-www-form-urlencoded',
+        function verified(data) {
+            //Create an account if it doesn't already exist
+            var user = {
+                _id: data.CharacterName,
+                eveId: data.CharacterID
             }
-        };
+            
+            //TODO ensure duplicate key error, else real error
+            model.createAccount(user, startSession, startSession);
+            function startSession() {
+                model.startSession(user._id, setCookie, next);
+            }
 
-        var request = https.request(options, handleReponse);
-        request.write(data);
-        request.end();
-
-        function handleReponse(res) {
-            res.on('data', function (data) {
-                try {
-                    var foo = JSON.parse(data.toString());
-                }
-                catch (e) {
-                    console.error(e);
-                }
-            });
-        }
-    }
-
-    this.login = function (req, res, next) {
-        var _id = req.body.userName;
-        var password = req.body.password;
-
-        if (!_id || !password) {
-            return next({ invalidModel: true });
-        }
-	
-        //Force _id to lowercase
-        _id = _id.toLowerCase();
-        
-        //Input looks good, try to validate
-        model.validateLogin(_id, password, startSession, next);
-
-        function startSession(user) {
-            //Credentials valid, start session
-            model.startSession(user._id, setSessionCookie, next);
-        }
-
-        function setSessionCookie(sessionId) {
-            res.cookie('sessionId', sessionId, cookieSettings);
-            res.status(200).send();
+            function setCookie(sessionId) {
+                res.cookie('sessionId', sessionId, cookieSettings);
+                res.status(200).send();
+            }
         }
     };
 
@@ -87,31 +51,10 @@ function AccountCtrl(models, productionMode) {
         }
     };
 
-    this.register = function (req, res, next) {
-        var user = {};
-        user.id = req.body.userName;
-        var password = req.body.password;
-
-        if (!user.id || !password)
-            return next({ invalidInput: true });
-
-        user._id = user.id.toLowerCase();
-        model.createAccount(user, password, addUserSuccess, next);
-
-        function addUserSuccess() {
-            model.startSession(user._id, setSessionCookie, next);
-        }
-
-        function setSessionCookie(sessionId) {
-            res.cookie('sessionId', sessionId, cookieSettings);
-            res.status(200).send();
-        }
-    }
-
     this.getMe = function (req, res, next) {
         if (req.user !== undefined)
             res.json(req.user);
         else
             res.json({ noOne: true });
-    }
+    };
 }

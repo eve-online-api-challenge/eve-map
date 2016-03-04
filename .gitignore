@@ -5,3 +5,4 @@ public/site-*
 public/css/
 publicjs/
 npm-debug.log
+secrets.json
