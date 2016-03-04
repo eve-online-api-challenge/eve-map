@@ -2,6 +2,7 @@
 var express = require('express');
 var auth = require('../auth');
 var https = require('https');
+var querystring = require('querystring');
 
 module.exports.router = accountRouter;
 module.exports.Ctrl = AccountCtrl;
@@ -12,7 +13,7 @@ function accountRouter(ctrl) {
     router.post('/logout', ctrl.logout);
     router.post('/register', ctrl.register);
     router.get('/me', ctrl.getMe);
-    router.post('/sso/:code', ctrl.fuckyousso)
+    router.post('/sso/:code', ctrl.eveLogin)
     return router;
 }
 
@@ -21,13 +22,15 @@ function AccountCtrl(models, productionMode) {
     var cookieSettings = { httpOnly: true };
     if (productionMode) cookieSettings.secure = true;
 
-    this.fuckyousso = function (req, res, next) {
+    this.eveLogin = function (req, res, next) {
         if (!req.params.code)
             next({ invalidInput: true });
 
+        var data = querystring.stringify({ grant_type: 'authorization_code', code: req.params.code })
+
         var options = {
             hostname: 'login.eveonline.com',
-            path: '/oauth/token?grant_type=authorization_code&code=' + req.params.code,
+            path: '/oauth/token',
             method: 'POST',
             headers: {
                 Authorization: 'Basic ' + (new Buffer("11d77446d3054979aaf51054b467ea67:ZHIgybKxgeYQFSYumPuhR0FZhk6IsV3e48ScPg8K").toString('base64')),
@@ -35,12 +38,20 @@ function AccountCtrl(models, productionMode) {
             }
         };
 
+        var request = https.request(options, handleReponse);
+        request.write(data);
+        request.end();
 
-        https.request(options, function foo(res) {
+        function handleReponse(res) {
             res.on('data', function (data) {
-                console.log('yeah, just mostly fuck you');
+                try {
+                    var foo = JSON.parse(data.toString());
+                }
+                catch (e) {
+                    console.error(e);
+                }
             });
-        });
+        }
     }
 
     this.login = function (req, res, next) {
